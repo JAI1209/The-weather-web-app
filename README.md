@@ -2,6 +2,11 @@
 
 A responsive weather forecast app built with **vanilla JavaScript**, **Tailwind CSS (CDN)**, and a small amount of **custom CSS** for the glass / background effects.
 
+## Live Demo (GitHub Pages)
+
+After enabling GitHub Pages, your site will be available at:
+`https://jai1209.github.io/The-weather-web-app/`
+
 ## Features
 
 - Search weather by **city name**
@@ -34,3 +39,11 @@ A responsive weather forecast app built with **vanilla JavaScript**, **Tailwind 
 
 - API endpoint used: `api.openweathermap.org/data/2.5/forecast` (3-hour intervals).
 - Recently searched cities are stored under `localStorage["recentCities"]`.
+- This is a frontend-only project, so the API key is visible in the browser. For production apps, proxy requests through a backend to keep keys private.
+
+## How It Works (Short)
+
+- `JS/api.js` builds the API URL and fetches forecast JSON from OpenWeatherMap.
+- `JS/main.js` handles all user interactions (search, Enter key, quick picks, geolocation, unit toggle, recent dropdown, About modal).
+- `JS/storage.js` stores your last 5 searches in `localStorage` and renders the dropdown.
+- `JS/ui.js` renders current weather, hourly cards (next 24 hours), and 5-day cards (midday snapshots), and applies the dynamic theme + toast messages.

@@ -41,8 +41,17 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 sm:gap-3">
           <span id="cityName" class="hidden sm:inline text-sm opacity-80"></span>
+          <button
+            id="aboutBtn"
+            class="btn-ghost"
+            type="button"
+            aria-haspopup="dialog"
+            aria-controls="aboutModal"
+          >
+            About
+          </button>
           <button
             id="unitToggle"
             class="btn-ghost"
@@ -242,6 +251,79 @@
         role="status"
         aria-live="polite"
       ></div>
+    </div>
+
+    <!-- ABOUT MODAL -->
+    <div
+      id="aboutModal"
+      class="hidden fixed inset-0 z-50 items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="aboutTitle"
+    >
+      <div
+        id="aboutBackdrop"
+        class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        aria-hidden="true"
+      ></div>
+
+      <div class="relative w-full max-w-2xl glass-card p-5 sm:p-6">
+        <div class="flex items-start justify-between gap-4">
+          <div class="min-w-0">
+            <h2 id="aboutTitle" class="text-lg sm:text-xl font-semibold">
+              About this weather app
+            </h2>
+            <p class="mt-1 text-sm opacity-80">
+              How the data is fetched and how the UI updates.
+            </p>
+          </div>
+          <button id="aboutCloseBtn" type="button" class="btn-ghost" aria-label="Close about">
+            Close
+          </button>
+        </div>
+
+        <div class="mt-5 space-y-4 text-sm leading-relaxed opacity-95">
+          <div>
+            <h3 class="font-semibold opacity-90">1) Weather data</h3>
+            <p class="mt-1 opacity-85">
+              This app uses the OpenWeatherMap <span class="font-semibold">5 day / 3 hour forecast</span>
+              API. When you search a city (or use your location), it fetches JSON and then renders:
+              <span class="font-semibold">current</span> (first item),
+              <span class="font-semibold">hourly</span> (next 24 hours),
+              and a <span class="font-semibold">5-day</span> snapshot (midday).
+            </p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold opacity-90">2) Search + recent cities</h3>
+            <p class="mt-1 opacity-85">
+              Your searches are saved in <span class="font-semibold">localStorage</span> (up to 5 cities).
+              The dropdown appears only after your first search.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold opacity-90">3) Units + alerts</h3>
+            <p class="mt-1 opacity-85">
+              The <span class="font-semibold">°C/°F toggle</span> changes only today’s temperature.
+              If the temperature is above <span class="font-semibold">40°C</span>, the app shows a custom toast
+              warning.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold opacity-90">4) Dynamic theme</h3>
+            <p class="mt-1 opacity-85">
+              Background tint + effects change based on weather (clear/clouds/rain/thunder/snow/night).
+            </p>
+          </div>
+
+          <p class="text-xs opacity-70">
+            Tip: If you open the file directly (<span class="font-semibold">file://</span>), the browser can block
+            API calls. Use Live Server / localhost.
+          </p>
+        </div>
+      </div>
     </div>
 
     <script type="module" src="JS/main.js"></script>

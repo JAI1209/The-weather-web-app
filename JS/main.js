@@ -17,6 +17,10 @@ const unitToggle = document.getElementById("unitToggle");
 const recentDropdown = document.getElementById("recentDropdown");
 const clearBtn = document.getElementById("clearBtn");
 const quickPicks = document.getElementById("quickPicks");
+const aboutBtn = document.getElementById("aboutBtn");
+const aboutModal = document.getElementById("aboutModal");
+const aboutBackdrop = document.getElementById("aboutBackdrop");
+const aboutCloseBtn = document.getElementById("aboutCloseBtn");
 
 let lastData = null;
 let unit = loadUnit();
@@ -25,6 +29,7 @@ let tzOffsetSeconds = null;
 renderRecentDropdown(recentDropdown);
 syncUnitLabel();
 startClock();
+wireAboutModal();
 
 searchBtn?.addEventListener("click", () => {
   const city = (cityInput?.value || "").trim();
@@ -141,6 +146,32 @@ function loadUnit() {
 function syncUnitLabel() {
   const label = document.getElementById("unitLabel");
   if (label) label.textContent = unit === "F" ? `${DEG}F` : `${DEG}C`;
+}
+
+function wireAboutModal() {
+  if (!aboutBtn || !aboutModal) return;
+
+  const open = () => {
+    aboutModal.classList.remove("hidden");
+    aboutModal.classList.add("flex");
+    aboutBtn.setAttribute("aria-expanded", "true");
+    aboutCloseBtn?.focus?.();
+  };
+
+  const close = () => {
+    aboutModal.classList.add("hidden");
+    aboutModal.classList.remove("flex");
+    aboutBtn.setAttribute("aria-expanded", "false");
+    aboutBtn.focus?.();
+  };
+
+  aboutBtn.addEventListener("click", open);
+  aboutCloseBtn?.addEventListener("click", close);
+  aboutBackdrop?.addEventListener("click", close);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !aboutModal.classList.contains("hidden")) close();
+  });
 }
 
 function startClock() {
