@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+
+    <title>weather web &mdash; Forecast Dashboard</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body class="text-white font-[Inter]" data-weather="default">
+    <!-- BACKGROUND -->
+    <div class="bg-layer" aria-hidden="true">
+      <img src="assets/BG/bg.jpg" alt="" />
+      <div class="overlay"></div>
+    </div>
+
+    <!-- WEATHER FX LAYER -->
+    <div id="fx" class="fx" aria-hidden="true"></div>
+
+    <div
+      class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 relative z-10 min-h-screen"
+    >
+      <header class="flex items-center justify-between gap-4 mb-6 sm:mb-8">
+        <div class="flex items-center gap-3 min-w-0">
+          <h1 class="brand text-lg sm:text-xl font-semibold tracking-wide truncate">
+            <span class="brand-main">Theweather</span>
+            <span class="brand-sub">web</span>
+          </h1>
+          <div class="hidden sm:flex items-center gap-2 text-xs timestamp">
+            <span class="timestamp-dot" aria-hidden="true"></span>
+            <p id="localTime" class="opacity-80 tabular-nums"></p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <span id="cityName" class="hidden sm:inline text-sm opacity-80"></span>
+          <button
+            id="unitToggle"
+            class="btn-ghost"
+            type="button"
+            aria-label="Toggle temperature unit"
+          >
+            <span id="unitLabel">&deg;C</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="grid lg:grid-cols-[1fr,380px] gap-6 lg:gap-8 items-start">
+        <!-- LEFT -->
+        <section class="space-y-6">
+          <section class="glass-card p-6 sm:p-8">
+            <div
+              class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6"
+            >
+              <div class="flex items-center gap-5">
+                <img
+                  id="weatherIcon"
+                  class="w-16 h-16 sm:w-20 sm:h-20 select-none"
+                  src="assets/icon/wind.png"
+                  alt="Weather icon"
+                />
+                <div class="min-w-0">
+                  <p class="text-xs uppercase tracking-wider opacity-70">
+                    Current
+                  </p>
+                  <div class="flex items-baseline gap-3">
+                    <h2
+                      id="temperature"
+                      class="text-6xl sm:text-7xl font-semibold leading-none tracking-tight"
+                    >
+                      --
+                    </h2>
+                    <span id="tempUnitPill" class="pill">&deg;C</span>
+                  </div>
+                  <p
+                    id="conditionText"
+                    class="mt-2 text-sm sm:text-base opacity-90"
+                  >
+                    Search a city to begin
+                  </p>
+                  <p id="feelsLike" class="text-sm opacity-70"></p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-3 gap-3 sm:gap-4">
+                <div class="stat">
+                  <p class="stat-label">Wind</p>
+                  <p id="wind" class="stat-value">--</p>
+                </div>
+                <div class="stat">
+                  <p class="stat-label">Humidity</p>
+                  <p id="humidity" class="stat-value">--</p>
+                </div>
+                <div class="stat">
+                  <p class="stat-label">Rain</p>
+                  <p id="rain" class="stat-value">--</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="glass-card p-5 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="opacity-80 text-sm uppercase tracking-wider">
+                Hourly Forecast
+              </h3>
+              <p class="text-xs opacity-70 hidden sm:block">Next 24 hours</p>
+            </div>
+            <div
+              id="hourlyContainer"
+              class="flex gap-3 overflow-x-auto pb-2"
+            ></div>
+          </section>
+
+          <section class="glass-card p-5 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="opacity-80 text-sm uppercase tracking-wider">
+                5-Day Forecast
+              </h3>
+              <p id="forecastHint" class="text-xs opacity-70"></p>
+            </div>
+            <div
+              id="forecastContainer"
+              class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4"
+            ></div>
+          </section>
+        </section>
+
+        <!-- RIGHT / SIDEBAR -->
+        <aside class="glass-card p-5 sm:p-6 lg:sticky lg:top-8">
+          <div class="flex items-center gap-3">
+            <div class="relative flex-1">
+              <input
+                id="cityInput"
+                placeholder="Search another location"
+                autocomplete="off"
+                class="w-full rounded-xl bg-white/90 text-slate-900 placeholder:text-slate-500 px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-white/60"
+              />
+              <button
+                id="searchBtn"
+                type="button"
+                class="icon-btn"
+                aria-label="Search city"
+              >
+                <span aria-hidden="true" class="inline-flex">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10.5 18.5C14.6421 18.5 18 15.1421 18 11C18 6.85786 14.6421 3.5 10.5 3.5C6.35786 3.5 3 6.85786 3 11C3 15.1421 6.35786 18.5 10.5 18.5Z"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M21 21L16.8 16.8"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-3 grid grid-cols-2 gap-3">
+            <button id="locationBtn" type="button" class="btn-primary">
+              Use my location
+            </button>
+            <button id="clearBtn" type="button" class="btn-ghost">Clear</button>
+          </div>
+
+          <select
+            id="recentDropdown"
+            class="mt-4 w-full rounded-xl bg-white/90 text-slate-900 px-4 py-3 hidden"
+          ></select>
+
+          <div class="mt-6">
+            <h4 class="text-sm font-semibold opacity-90">Quick picks</h4>
+            <div class="mt-3 grid grid-cols-2 gap-2" id="quickPicks">
+              <button class="chip" type="button" data-city="London">
+                London
+              </button>
+              <button class="chip" type="button" data-city="Birmingham">
+                Birmingham
+              </button>
+              <button class="chip" type="button" data-city="Manchester">
+                Manchester
+              </button>
+              <button class="chip" type="button" data-city="New York">
+                New York
+              </button>
+              <button class="chip" type="button" data-city="California">
+                California
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-8 border-t border-white/10 pt-6">
+            <h4 class="text-sm font-semibold opacity-90">Weather details</h4>
+            <dl class="mt-4 space-y-3 text-sm">
+              <div class="detail-row">
+                <dt class="detail-key">Condition</dt>
+                <dd id="detailCondition" class="detail-val">--</dd>
+              </div>
+              <div class="detail-row">
+                <dt class="detail-key">Humidity</dt>
+                <dd id="detailHumidity" class="detail-val">--</dd>
+              </div>
+              <div class="detail-row">
+                <dt class="detail-key">Wind</dt>
+                <dd id="detailWind" class="detail-val">--</dd>
+              </div>
+              <div class="detail-row">
+                <dt class="detail-key">Rain</dt>
+                <dd id="detailRain" class="detail-val">--</dd>
+              </div>
+            </dl>
+          </div>
+        </aside>
+      </main>
+
+      <div
+        id="toast"
+        class="toast hidden"
+        role="status"
+        aria-live="polite"
+      ></div>
+    </div>
+
+    <script type="module" src="JS/main.js"></script>
+  </body>
+</html>
