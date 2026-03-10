@@ -1,0 +1,7 @@
+name = "the-weather-web-proxy"
+main = "src/index.js"
+compatibility_date = "2026-03-10"
+
+# Set your secret API key:
+#   wrangler secret put OPENWEATHER_API_KEY
+

@@ -1,7 +1,18 @@
 // OpenWeatherMap "5 day / 3 hour" forecast API wrapper.
 // This module fetches forecast JSON and normalizes common error cases into friendly messages.
 const API_KEY = "YOUR_API_KEY";
-const BASE_URL = "https://api.openweathermap.org/data/2.5/forecast";
+const DIRECT_BASE_URL = "https://api.openweathermap.org/data/2.5/forecast";
+
+// Optional proxy to keep the API key off the frontend (recommended for public deployments).
+// Set `window.WEATHER_PROXY_URL` in `index.html` to something like: https://your-worker.workers.dev
+const PROXY_BASE_URL =
+  typeof window !== "undefined" && typeof window.WEATHER_PROXY_URL === "string"
+    ? window.WEATHER_PROXY_URL.trim()
+    : "";
+
+function usingProxy() {
+  return Boolean(PROXY_BASE_URL);
+}
 
 function assertApiKey() {
   if (!API_KEY || API_KEY === "YOUR_API_KEY") {
@@ -20,9 +31,14 @@ function assertNotFileProtocol() {
 }
 
 function buildUrl(params) {
-  const url = new URL(BASE_URL);
-  url.searchParams.set("appid", API_KEY);
-  url.searchParams.set("units", "metric");
+  const url = usingProxy()
+    ? new URL("/forecast", PROXY_BASE_URL)
+    : new URL(DIRECT_BASE_URL);
+
+  if (!usingProxy()) {
+    url.searchParams.set("appid", API_KEY);
+    url.searchParams.set("units", "metric");
+  }
 
   for (const [key, value] of Object.entries(params)) {
     url.searchParams.set(key, String(value));
@@ -32,8 +48,8 @@ function buildUrl(params) {
 }
 
 async function requestJson(url) {
-  assertApiKey();
   assertNotFileProtocol();
+  if (!usingProxy()) assertApiKey();
 
   const res = await fetch(url, { mode: "cors", cache: "no-store" });
 
@@ -56,7 +72,9 @@ async function requestJson(url) {
   if (res.status === 0) {
     message = "Network error. Check your internet connection and try again.";
   } else if (res.status === 401) {
-    message = "Invalid API key (401). Check your OpenWeatherMap key in `JS/api.js`.";
+    message = usingProxy()
+      ? "Proxy unauthorized (401). Check the proxy's OpenWeatherMap key/secret."
+      : "Invalid API key (401). Check your OpenWeatherMap key in `JS/api.js`.";
   } else if (res.status === 404) {
     message = "City not found. Try a different name.";
   } else if (res.status === 429) {

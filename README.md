@@ -28,6 +28,21 @@ After enabling GitHub Pages, your site will be available at:
    - Option A (recommended): use VS Code “Live Server” extension on `index.html`
    - Option B: open `index.html` directly in a browser (location feature may require HTTPS / localhost)
 
+## Hide the API Key (Recommended for GitHub Pages)
+
+On GitHub Pages, any API key placed in frontend JavaScript is **public**. To keep the OpenWeatherMap key private,
+use the included Cloudflare Worker proxy and store the key as a server-side secret.
+
+1. Install Wrangler: `npm i -g wrangler`
+2. Deploy the worker:
+   - `cd proxy/cloudflare-worker`
+   - `wrangler login`
+   - `wrangler secret put OPENWEATHER_API_KEY`
+   - `wrangler deploy`
+3. Copy your worker URL and set it in `index.html`:
+   - `window.WEATHER_PROXY_URL = "https://<your-worker>.workers.dev";`
+4. (Optional) Keep `JS/api.js` as-is; when `WEATHER_PROXY_URL` is set, the app will use the proxy and will not send the API key from the browser.
+
 ## Usage
 
 - Type a city in the search box and press **Enter** or click the search icon.
@@ -39,7 +54,7 @@ After enabling GitHub Pages, your site will be available at:
 
 - API endpoint used: `api.openweathermap.org/data/2.5/forecast` (3-hour intervals).
 - Recently searched cities are stored under `localStorage["recentCities"]`.
-- This is a frontend-only project, so the API key is visible in the browser. For production apps, proxy requests through a backend to keep keys private.
+- If you do not use a proxy, the API key is visible in the browser. For production apps, proxy requests through a backend to keep keys private.
 
 ## How It Works (Short)
 
